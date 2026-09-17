@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aditya Biswal — Web Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-deep: #0B4FD1;
+    --blue-mid: #1E74F0;
+    --blue-light: #4E9BFF;
+    --ink: #0B1D36;
+    --slate: #33507A;
+    --slate-light: #6D89B5;
+    --accent: #0B4FD1;
+    --white: #FFFFFF;
+    --card-border: rgba(11,29,54,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, var(--blue-deep) 0%, var(--blue-mid) 45%, var(--blue-light) 100%);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  ::selection { background: var(--white); color: var(--blue-deep); }
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* GLOSSY BLUE AMBIENT LAYER — soft white drops + specular highlights */
+  .sky-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .drop {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    filter: blur(70px);
+    will-change: transform;
+  }
+  .drop-1 { top: -8%;  left: -6%;  width: 380px; height: 380px; opacity: 0.35; animation: floatA 34s ease-in-out infinite; }
+  .drop-2 { top: 10%;  right: -8%; width: 460px; height: 460px; opacity: 0.28; animation: floatB 40s ease-in-out infinite; }
+  .drop-3 { top: 55%;  left: 40%;  width: 300px; height: 300px; opacity: 0.18; animation: floatA 30s ease-in-out infinite reverse; }
+
+  /* Water-droplet / condensation texture — one layer, many gradients, cheap to render */
+  .droplet-field {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    background-image:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.15) 45%, transparent 70%),
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.1) 40%, transparent 65%),
+      radial-gradient(circle at 35% 25%, rgba(255,255,255,0.8), rgba(255,255,255,0.1) 40%, transparent 65%),
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.75), rgba(255,255,255,0.08) 40%, transparent 65%),
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.7), rgba(255,255,255,0.08) 35%, transparent 60%),
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.65), rgba(255,255,255,0.06) 35%, transparent 60%),
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,0.6), rgba(255,255,255,0.05) 35%, transparent 60%),
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.05) 30%, transparent 55%);
+    background-repeat: no-repeat;
+    background-size:
+      46px 46px, 30px 30px, 62px 62px, 22px 22px,
+      38px 38px, 18px 18px, 50px 50px, 26px 26px;
+    background-position:
+      8% 14%, 18% 40%, 76% 10%, 62% 30%,
+      86% 55%, 40% 60%, 12% 68%, 68% 72%;
+  }
+
+  /* Humidity haze — very soft misty veil across the hero */
+  .humidity-veil {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.16), transparent 65%);
+  }
+
+  .sheen {
+    position: absolute;
+    inset: -20% -20% auto -20%;
+    height: 60%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 100%);
+    transform: rotate(-4deg);
+  }
+
+  .specular {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    filter: blur(1px);
+  }
+  .sp1 { top: 12%; left: 22%; width: 5px; height: 5px; opacity: 0.8; }
+  .sp2 { top: 28%; left: 68%; width: 4px; height: 4px; opacity: 0.6; }
+  .sp3 { top: 44%; left: 46%; width: 3px; height: 3px; opacity: 0.5; }
+
+  @keyframes floatA {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(40px, 30px); }
+  }
+  @keyframes floatB {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(-35px, 25px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .drop { animation: none; }
+  }
+
+  main, header, nav, footer { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(30, 90, 210, 0.35);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    z-index: 10;
+  }
+  nav .wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 72px;
+  }
+  .nav-logo {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.93rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-cta {
+    background: #fff;
+    color: var(--blue-deep) !important;
+    padding: 9px 18px;
+    border-radius: 100px;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+  }
+
+  /* HERO */
+  .hero { padding: 120px 0 90px; color: #fff; }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+  .eyebrow .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #4FE38A;
+  }
+  h1 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+    margin-bottom: 24px;
+    color: #fff;
+  }
+  .hero p.lede {
+    color: rgba(255,255,255,0.85);
+    font-size: 1.2rem;
+    max-width: 52ch;
+    margin-bottom: 36px;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 64px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: #fff; color: var(--blue-deep); box-shadow: 0 10px 28px rgba(0,0,0,0.18); }
+  .btn-secondary { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+
+  /* STATS BAR */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .stat { background: rgba(255,255,255,0.10); padding: 26px 24px; }
+  .stat-num { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.9rem; color: #fff; }
+  .stat-label { color: rgba(255,255,255,0.75); font-size: 0.88rem; margin-top: 4px; }
+
+  /* SECTIONS ON WHITE */
+  .content-section {
+    background: #F5F9FF;
+    position: relative;
+    z-index: 2;
+  }
+  section { padding: 90px 0; }
+  .section-tag { color: var(--blue-mid); font-weight: 600; font-size: 0.88rem; margin-bottom: 12px; }
+  h2 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    letter-spacing: -0.01em;
+    max-width: 20ch;
+    color: var(--ink);
+  }
+  .section-sub { color: var(--slate); font-size: 1.05rem; max-width: 55ch; margin-top: 14px; }
+  .section-head { margin-bottom: 48px; }
+
+  /* PROJECTS */
+  .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .project-card {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 28px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(11,29,54,0.04);
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(11,29,54,0.10);
+  }
+  .project-thumb {
+    height: 150px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #EAF2FF, #DCEAFF);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--slate-light);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .project-card h3 { font-family: 'Sora', sans-serif; font-size: 1.15rem; margin-bottom: 8px; }
+  .project-card p { color: var(--slate); font-size: 0.94rem; margin-bottom: 16px; flex-grow: 1; }
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.78rem;
+    color: var(--blue-mid);
+    background: #EAF2FF;
+    padding: 4px 11px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  /* SKILLS */
+  .skill-cloud { display: flex; flex-wrap: wrap; gap: 12px; }
+  .skill-pill {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(11,29,54,0.03);
+  }
+
+  /* TIMELINE */
+  .timeline { border-left: 2px solid var(--card-border); padding-left: 32px; display: flex; flex-direction: column; gap: 36px; }
+  .timeline-item { position: relative; }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -39px; top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--blue-mid);
+    border: 3px solid #F5F9FF;
+  }
+  .timeline-date { font-size: 0.85rem; color: var(--slate-light); font-weight: 500; margin-bottom: 4px; }
+  .timeline-item h3 { font-family: 'Sora', sans-serif; font-size: 1.1rem; margin-bottom: 6px; color: var(--ink); }
+  .timeline-item p { color: var(--slate); max-width: 55ch; }
+
+  /* CONTACT */
+  .contact-card {
+    background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
+    border-radius: 24px;
+    padding: 64px 48px;
+    color: #fff;
+  }
+  .contact-card .section-tag { color: #BFDBFF; }
+  .contact-card h2 { color: #fff; max-width: 18ch; }
+  .contact-card p { color: rgba(255,255,255,0.85); margin-top: 14px; max-width: 45ch; }
+  .contact-actions { display: flex; gap: 16px; margin-top: 32px; flex-wrap: wrap; }
+  .contact-actions .btn-secondary { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); color: #fff; }
+
+  footer { padding: 40px 0 56px; text-align: center; color: var(--slate-light); font-size: 0.88rem; background: #F5F9FF; }
+
+  @media (max-width: 780px) {
+    .project-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .contact-card { padding: 40px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky-layer" aria-hidden="true">
+  <div class="drop drop-1"></div>
+  <div class="drop drop-2"></div>
+  <div class="drop drop-3"></div>
+  <div class="sheen"></div>
+  <div class="droplet-field"></div>
+  <div class="humidity-veil"></div>
+  <div class="specular sp1"></div>
+  <div class="specular sp2"></div>
+  <div class="specular sp3"></div>
+</div>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-logo">Aditya Biswal</div>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact" class="nav-cta">Get in touch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div class="eyebrow"><span class="pulse"></span> Open to opportunities</div>
+  <h1>Hi, I'm Aditya Biswal — I build things for the web.</h1>
+  <p class="lede">A web developer focused on writing clean, functional front-ends — currently building my portfolio project by project, one commit at a time.</p>
+  <div class="hero-actions">
+    <a href="#work" class="btn btn-primary">View my work</a>
+    <a href="https://github.com/yourusername" class="btn btn-secondary">GitHub ↗</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">3+</div>
+      <div class="stat-label">Projects shipped</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">HTML/CSS/JS</div>
+      <div class="stat-label">Core stack</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Daily</div>
+      <div class="stat-label">Learning cadence</div>
+    </div>
+  </div>
+</header>
+
+<div class="content-section">
+<section id="work">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">Selected work</div>
+      <h2>Projects I've built recently</h2>
+      <p class="section-sub">A mix of practice builds and real ideas, each one teaching me something new about the web.</p>
+    </div>
+    <div class="project-grid">
+      <a href="#" class="project-card">
+        <div class="project-thumb">Project screenshot</div>
+        <h3>Project One</h3>
+        <p>A short description of what this project does, the problem it solves, and what you learned building it.</p>
+        <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span></div>
+      </a>
+      <a href="#" class="project-card">
+        <div class="project-thumb">Project screenshot</div>
+        <h3>Project Two</h3>
+        <p>A short description of what this project does, the problem it solves, and what you learned building it.</p>
+        <div class="project-tags"><span class="tag">JavaScript</span></div>
+      </a>
+      <a href="#" class="project-card">
+        <div class="project-thumb">Project screenshot</div>
+        <h3>Project Three</h3>
+        <p>A short description — it's fine if this one's still in progress. Show the process, not just finished work.</p>
+        <div class="project-tags"><span class="tag">In progress</span></div>
+      </a>
+      <a href="#" class="project-card">
+        <div class="project-thumb">Project screenshot</div>
+        <h3>Project Four</h3>
+        <p>Swap this card out, or delete it, once you have a real fourth project to show.</p>
+        <div class="project-tags"><span class="tag">React</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">Toolbox</div>
+      <h2>What I work with</h2>
+    </div>
+    <div class="skill-cloud">
+      <span class="skill-pill">HTML5</span>
+      <span class="skill-pill">CSS3</span>
+      <span class="skill-pill">JavaScript</span>
+      <span class="skill-pill">Git & GitHub</span>
+      <span class="skill-pill">Responsive Design</span>
+      <span class="skill-pill">Figma basics</span>
+      <span class="skill-pill">React (learning)</span>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-tag">Journey</div>
+      <h2>How I got here</h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2026</div>
+        <h3>Started building real projects</h3>
+        <p>Moved from tutorials to building my own small projects and pushing them to GitHub.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2025</div>
+        <h3>Learned the fundamentals</h3>
+        <p>HTML, CSS and JavaScript basics — the building blocks everything else is on top of.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">Earlier</div>
+        <h3>Got curious about how the web works</h3>
+        <p>Started poking around dev tools and asking "how did they build that."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-card">
+      <div class="section-tag">Let's talk</div>
+      <h2>Have a project in mind, or just want to say hi?</h2>
+      <p>I'm open to internships, freelance work, and collaborations. Reach out — I usually reply within a day.</p>
+      <div class="contact-actions">
+        <a href="mailto:adityabiswal063@gmail.com" class="btn btn-primary">Email me</a>
+        <a href="https://github.com/yourusername" class="btn btn-secondary">GitHub ↗</a>
+        <a href="https://linkedin.com/in/yourusername" class="btn btn-secondary">LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  Designed & built by Aditya Biswal
+</footer>
+</div>
+
+</body>
+</html>
